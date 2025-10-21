@@ -1,19 +1,49 @@
 <div style="display:flex;justify-content:center;align-items:center;padding:50px;background:#f0f4f8;">
   <div style="background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);max-width:500px;width:100%;">
-    <h2 style="text-align:center;color:#333;">Send Your Message</h2>
+    <h2 style="text-align:center;color:#333;">💭 Leave a Message for Us</h2>
 
     <!-- Formspree form -->
-    <form action="https://formspree.io/f/xjkazndw" method="POST" style="display:flex;flex-direction:column;gap:15px;">
-      <input type="text" name="name" placeholder="Your Name" required
+    <form id="messageForm" action="https://formspree.io/f/xjkazndw" method="POST" style="display:flex;flex-direction:column;gap:15px;">
+      <input type="text" name="name" placeholder="Your Name and Class" required
              style="padding:10px;border:1px solid #ccc;border-radius:8px;font-size:16px;">
-      <textarea name="message" placeholder="Your Message" required
+      <textarea name="message" placeholder="Your Message for Us" required
                 style="padding:10px;border:1px solid #ccc;border-radius:8px;font-size:16px;min-height:100px;"></textarea>
       <button type="submit" style="background-color:#007BFF;color:#fff;padding:12px;border:none;border-radius:8px;font-size:16px;cursor:pointer;">
         Send
       </button>
     </form>
 
-    <div id="responseMsg" style="text-align:center;margin-top:10px;font-weight:bold;color:green;">
-    </div>
+    <div id="responseMsg" style="text-align:center;margin-top:10px;font-weight:bold;"></div>
   </div>
 </div>
+
+<script>
+document.getElementById("messageForm").addEventListener("submit", async function(e) {
+  e.preventDefault(); // stop default redirect
+  const form = e.target;
+  const responseMsg = document.getElementById("responseMsg");
+
+  responseMsg.style.color = "#555";
+  responseMsg.textContent = "Sending...";
+
+  try {
+    const res = await fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { "Accept": "application/json" }
+    });
+
+    if (res.ok) {
+      responseMsg.style.color = "green";
+      responseMsg.textContent = "✅ Message sent successfully!";
+      form.reset();
+    } else {
+      responseMsg.style.color = "red";
+      responseMsg.textContent = "❌ Something went wrong. Please try again.";
+    }
+  } catch (error) {
+    responseMsg.style.color = "red";
+    responseMsg.textContent = "⚠️ Network error. Please check your connection.";
+  }
+});
+</script>
