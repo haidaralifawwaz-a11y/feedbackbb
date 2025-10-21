@@ -1,5 +1,5 @@
-<div style="display:flex;justify-content:center;align-items:center;padding:50px;background:#f0f4f8;">
-  <div style="background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);max-width:500px;width:100%;">
+<div id="formContainer" style="display:flex;justify-content:center;align-items:center;padding:50px;background:#f0f4f8;min-height:100vh;">
+  <div id="formCard" style="background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);max-width:500px;width:100%;transition:opacity 0.3s ease;">
     <h2 style="text-align:center;color:#333;">💭 Leave a Message for Us</h2>
 
     <!-- Formspree form -->
@@ -8,7 +8,8 @@
              style="padding:10px;border:1px solid #ccc;border-radius:8px;font-size:16px;">
       <textarea name="message" placeholder="Your Message for Us" required
                 style="padding:10px;border:1px solid #ccc;border-radius:8px;font-size:16px;min-height:100px;"></textarea>
-      <button type="submit" style="background-color:#007BFF;color:#fff;padding:12px;border:none;border-radius:8px;font-size:16px;cursor:pointer;">
+      <button id="submitBtn" type="submit"
+              style="background-color:#007BFF;color:#fff;padding:12px;border:none;border-radius:8px;font-size:16px;cursor:pointer;">
         Send
       </button>
     </form>
@@ -19,10 +20,16 @@
 
 <script>
 document.getElementById("messageForm").addEventListener("submit", async function(e) {
-  e.preventDefault(); // stop default redirect
+  e.preventDefault();
   const form = e.target;
+  const formCard = document.getElementById("formCard");
   const responseMsg = document.getElementById("responseMsg");
+  const submitBtn = document.getElementById("submitBtn");
 
+  // Disable button while sending
+  submitBtn.disabled = true;
+  submitBtn.style.backgroundColor = "#6c757d";
+  submitBtn.textContent = "Sending...";
   responseMsg.style.color = "#555";
   responseMsg.textContent = "Sending...";
 
@@ -34,16 +41,33 @@ document.getElementById("messageForm").addEventListener("submit", async function
     });
 
     if (res.ok) {
-      responseMsg.style.color = "green";
-      responseMsg.textContent = "✅ Message sent successfully!";
-      form.reset();
+      // Fade out form smoothly
+      formCard.style.opacity = "0";
+      setTimeout(() => {
+        formCard.innerHTML = `
+          <div style="text-align:center;padding:50px;">
+            <h2 style="font-size:28px;color:#333;">🎉 Thank You!</h2>
+            <p style="font-size:18px;color:#555;margin-top:10px;">
+              Your message has been sent successfully.<br>
+              We appreciate your time and effort 💌
+            </p>
+          </div>
+        `;
+        formCard.style.opacity = "1";
+      }, 300);
     } else {
       responseMsg.style.color = "red";
       responseMsg.textContent = "❌ Something went wrong. Please try again.";
+      submitBtn.disabled = false;
+      submitBtn.style.backgroundColor = "#007BFF";
+      submitBtn.textContent = "Send Again";
     }
   } catch (error) {
     responseMsg.style.color = "red";
     responseMsg.textContent = "⚠️ Network error. Please check your connection.";
+    submitBtn.disabled = false;
+    submitBtn.style.backgroundColor = "#007BFF";
+    submitBtn.textContent = "Try Again";
   }
 });
 </script>
